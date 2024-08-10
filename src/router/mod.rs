@@ -2,6 +2,8 @@ use std::fmt;
 
 pub mod naive;
 
+pub mod into_response;
+
 #[derive(Debug, Clone)]
 pub struct Request {
     pub method: Method,
