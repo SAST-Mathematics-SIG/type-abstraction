@@ -3,7 +3,7 @@
 :figure-caption: 图
 :lang: zh-CN
 :nofooter:
-:source-highlighter: rouge
+:source-highlighter: highlight.js
 :stylesheet: ./sans.min.css
 :toc: preamble
 :toc-title: 目录
@@ -16,6 +16,8 @@
 == 引子
 
 === 除法
+
+以下是一个常见的除法定义，采用 Rust 语言，以 `u32` 类型为例：
 
 [,rust]
 ----
@@ -34,18 +36,18 @@ fn main() {
 
 虽然 Rust 标准库文档说明了除法可能 panic，[.line-through]#但是正经人谁看文档啊，下贱# 但是文档里面的备注容易被忽略，而这种把潜在错误留到运行时的行为很容易导致意外崩溃。
 
-image::./images/impl_div_for_u32.png[]
-image::./images/div_impl_integer.png[]
+image::./images/impl_div_for_u32.png[`+impl Div for u32+`]
+image::./images/div_impl_integer.png[macro `+div_impl_integer+`]
 
 对此，我们可以用两种方法在类型层面解决：
 
 . 限制除数类型为非零整数，如采用 `+NonZero<u32>+` 类型：
 +
 --
-image::./images/impl_div_non_zero_u32_for_u32.png[impl Div<NonZero_u32_for_u32]
-image::./images/impl_div_non_zero_u32_for_u32_src.png[]
+image::./images/impl_div_non_zero_u32_for_u32.png[`+impl Div<NonZero<u32>> for u32+`]
+image::./images/impl_div_non_zero_u32_for_u32_src.png[`+impl Div<NonZero<$Int>> for $Int+` source]
 
-相当于定义：
+如果忽略掉运行时检查，这相当于定义：
 
 [,rust]
 ----
@@ -57,7 +59,7 @@ fn div(a: u32, b: NonZero<u32>) -> u32 {
 
 . 运行时检查可能的错误，返回可能失败的结果，如 `checked_div` 函数：
 +
-image::./images/checked_div_u32.png[]
+image::./images/checked_div_u32.png[method `checked_div`]
 
 === 颜色
 
@@ -72,14 +74,16 @@ image::./images/checked_div_u32.png[]
 ** ANSI？
 +
 .ANSI 256 色
-image::./images/ansi-256-color.png[]
+image::./images/ansi-256-color.png[ANSI 256 色]
 
 * `any`？
 
-.颜色空间
-image::./images/CIE1931xy_gamut_comparison.png[]
+人眼所能看见的颜色范围很广，但是计算机对颜色的表示（颜色空间）只能覆盖人眼可见颜色的一部分。以下是常见的颜色空间与人眼可见颜色范围对比：
 
-你永远无法定义一个完美的 `Color` 类型！适合使用场景的类型才是最好的类型。
+.颜色空间
+image::./images/CIE1931xy_gamut_comparison.png[常见颜色空间与 CIE1931xy 对比]
+
+事实上，我们永远无法定义一个完美的 `Color` 类型！适合使用场景的类型才是最好的类型。
 
 以浏览器渲染流程为例，一个可能的类型工作流程是：
 
@@ -120,7 +124,7 @@ enum Color {
 
 类型本质是一种集合。好的类型应该和良好定义的集合具有相似的性质。
 
-高一的数学课介绍了集合的三大性质：
+高中的数学课介绍了集合的三大性质：
 
 * 确定性：对于任意一个元素，它要么属于这个集合，要么不属于这个集合。
 * 互异性：集合中的元素是互不相同的。
