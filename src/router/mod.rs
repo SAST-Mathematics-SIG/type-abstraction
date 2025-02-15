@@ -1,9 +1,11 @@
-use std::fmt;
+use std::{collections::HashMap, fmt};
 
-pub mod naive;
+use handler::{BoxedHandler, Handler};
 
 pub mod extractor;
+pub mod handler;
 pub mod into_response;
+pub mod naive;
 
 #[derive(Debug, Clone)]
 pub struct Request {
@@ -76,5 +78,38 @@ impl fmt::Debug for Status {
             Self::NotFound => write!(f, "404 Not Found"),
             Self::InternalServerError => write!(f, "500 Internal Server Error"),
         }
+    }
+}
+
+#[derive(Debug, Default)]
+pub struct App {
+    handlers: HashMap<String, BoxedHandler>,
+}
+
+impl App {
+    pub fn new() -> Self {
+        Self {
+            handlers: HashMap::new(),
+        }
+    }
+
+    pub fn with_handler<E, H>(&mut self, path: &str, handler: H) -> &mut Self
+    where
+        H: Handler<E> + 'static,
+    {
+        self.handlers
+            .insert(path.to_owned(), BoxedHandler::from_handler(handler));
+        self
+    }
+
+    pub fn handle(&self, req: &Request) -> Response {
+        self.handlers.get(&req.path).map_or_else(
+            || Response {
+                status: Status::NotFound,
+                headers: vec![("Content-Type".to_string(), "text/plain".to_string())],
+                body: Some(format!("Path {} not found", req.path).into_bytes()),
+            },
+            |handler| handler.handle(req),
+        )
     }
 }
