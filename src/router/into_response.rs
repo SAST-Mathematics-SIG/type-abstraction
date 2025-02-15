@@ -45,10 +45,10 @@ impl IntoResponse for Cow<'static, str> {
                 "Content-Type".to_string(),
                 "text/plain; charset=utf-8".to_string(),
             )],
-            body: match self {
+            body: Some(match self {
                 Cow::Borrowed(b) => b.as_bytes().to_vec(),
                 Cow::Owned(o) => o.into_bytes(),
-            },
+            }),
         }
     }
 }
@@ -61,10 +61,10 @@ impl IntoResponse for Cow<'static, [u8]> {
                 "Content-Type".to_string(),
                 "application/octet-stream".to_string(),
             )],
-            body: match self {
+            body: Some(match self {
                 Cow::Borrowed(b) => b.to_vec(),
                 Cow::Owned(o) => o,
-            },
+            }),
         }
     }
 }
