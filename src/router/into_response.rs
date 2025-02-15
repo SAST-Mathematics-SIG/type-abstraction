@@ -1,34 +1,9 @@
 use std::borrow::Cow;
 
-use super::{Request, Response, Status};
+use super::{Response, Status};
 
 pub trait IntoResponse {
     fn into_response(self) -> Response;
-}
-
-pub trait Handler<Res>
-where
-    Res: IntoResponse,
-{
-    fn handle_request(&self, request: Request) -> Res;
-}
-
-// fn real_handler<Res, H>(handler: &H, request: Request) -> Response
-// where
-//     Res: IntoResponse,
-//     H: Handler<Res>,
-// {
-//     handler.handle_request(request).into_response()
-// }
-
-impl<F, Res> Handler<Res> for F
-where
-    F: Fn(Request) -> Res,
-    Res: IntoResponse,
-{
-    fn handle_request(&self, request: Request) -> Res {
-        self(request)
-    }
 }
 
 impl IntoResponse for Response {

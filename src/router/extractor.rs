@@ -13,6 +13,21 @@ pub struct UserAgent(pub String);
 
 // And more...
 
+impl Extractor for Request {
+    fn extract(req: &Request) -> Option<Self> {
+        Some(req.clone())
+    }
+}
+
+impl Extractor for () {
+    fn extract(_: &Request) -> Option<Self>
+    where
+        Self: Sized,
+    {
+        Some(())
+    }
+}
+
 impl Extractor for Method {
     fn extract(req: &Request) -> Option<Self> {
         Some(Self(req.method))
@@ -54,7 +69,7 @@ where
 
 // Some tricks from `core::fmt::Debug` implementation for tuples
 
-macro_rules! impl_tuple {
+macro_rules! impl_extractor_for_tuples {
     () => ();
     ( $($name:ident,)+ ) => (
         maybe_tuple_doc! {
@@ -76,7 +91,7 @@ macro_rules! impl_tuple {
 }
 
 macro_rules! peel {
-    ($name:ident, $($other:ident,)*) => (impl_tuple! { $($other,)* })
+    ($name:ident, $($other:ident,)*) => (impl_extractor_for_tuples! { $($other,)* })
 }
 
 macro_rules! maybe_tuple_doc {
@@ -99,4 +114,4 @@ macro_rules! last_type {
     ($a:ident, $($rest_a:ident,)+) => { last_type!($($rest_a,)+) };
 }
 
-impl_tuple! { E12, E11, E10, E9, E8, E7, E6, E5, E4, E3, E2, E, }
+impl_extractor_for_tuples! { E12, E11, E10, E9, E8, E7, E6, E5, E4, E3, E2, E, }
