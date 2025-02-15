@@ -2,6 +2,7 @@ use std::fmt;
 
 pub mod naive;
 
+pub mod extractor;
 pub mod into_response;
 
 #[derive(Debug, Clone)]
@@ -9,14 +10,14 @@ pub struct Request {
     pub method: Method,
     pub path: String,
     pub headers: Vec<(String, String)>,
-    pub body: Vec<u8>,
+    pub body: Option<Vec<u8>>,
 }
 
 #[derive(Clone)]
 pub struct Response {
     pub status: Status,
     pub headers: Vec<(String, String)>,
-    pub body: Vec<u8>,
+    pub body: Option<Vec<u8>>,
 }
 
 #[non_exhaustive]
@@ -57,7 +58,10 @@ impl fmt::Debug for Response {
                     .cloned()
                     .collect::<IndexMap<_, _>>(),
             )
-            .field("body", &String::from_utf8_lossy(&self.body))
+            .field(
+                "body",
+                &self.body.as_ref().map(|b| String::from_utf8_lossy(b)),
+            )
             .finish()
     }
 }

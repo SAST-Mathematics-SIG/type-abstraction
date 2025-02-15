@@ -9,7 +9,7 @@ pub fn handle_request(req: Request) -> Response {
         } if path == "/hello" => Response {
             status: Status::Ok,
             headers: vec![("Content-Type".to_string(), "text/plain".to_string())],
-            body: b"Hello, world!".to_vec(),
+            body: Some(b"Hello, world!".to_vec()),
         },
 
         // Any other GET request should return a 404
@@ -20,7 +20,7 @@ pub fn handle_request(req: Request) -> Response {
         } => Response {
             status: Status::NotFound,
             headers: vec![("Content-Type".to_string(), "text/plain".to_string())],
-            body: format!("Path {} not found", path).into_bytes(),
+            body: Some(format!("Path {} not found", path).into_bytes()),
         },
 
         // OPTIONS requests to /hello should return a 200 with the allowed methods
@@ -34,7 +34,7 @@ pub fn handle_request(req: Request) -> Response {
                 ("Content-Type".to_string(), "text/plain".to_string()),
                 ("Allow".to_string(), "GET, OPTIONS".to_string()),
             ],
-            body: b"GET, OPTIONS".to_vec(),
+            body: Some(b"GET, OPTIONS".to_vec()),
         },
 
         // OPTIONS requests to any other path should return a 404
@@ -45,14 +45,14 @@ pub fn handle_request(req: Request) -> Response {
         } => Response {
             status: Status::NotFound,
             headers: vec![("Content-Type".to_string(), "text/plain".to_string())],
-            body: format!("Path {} not found", path).into_bytes(),
+            body: Some(format!("Path {} not found", path).into_bytes()),
         },
 
         // Any other request should return a 400
         Request { method, .. } => Response {
             status: Status::BadRequest,
             headers: vec![("Content-Type".to_string(), "text/plain".to_string())],
-            body: format!("Unsupported method {:?}", method).into_bytes(),
+            body: Some(format!("Unsupported method {:?}", method).into_bytes()),
         },
     }
 }
@@ -70,7 +70,7 @@ mod tests {
                 ("Host".to_string(), "example.com".to_string()),
                 ("Accept".to_string(), "text/plain".to_string()),
             ],
-            body: vec![],
+            body: None,
         };
         let res = handle_request(req);
 
@@ -86,7 +86,7 @@ mod tests {
                 ("Host".to_string(), "example.com".to_string()),
                 ("Accept".to_string(), "text/plain".to_string()),
             ],
-            body: vec![],
+            body: None,
         };
 
         let res = handle_request(req);
@@ -103,7 +103,7 @@ mod tests {
                 ("Host".to_string(), "example.com".to_string()),
                 ("Accept".to_string(), "text/plain".to_string()),
             ],
-            body: br#"{"name":"jswn"}"#.to_vec(),
+            body: Some(br#"{"name":"jswn"}"#.to_vec()),
         };
 
         let res = handle_request(req);
@@ -120,7 +120,7 @@ mod tests {
                 ("Host".to_string(), "example.com".to_string()),
                 ("Accept".to_string(), "text/plain".to_string()),
             ],
-            body: vec![],
+            body: None,
         };
 
         let res = handle_request(req);

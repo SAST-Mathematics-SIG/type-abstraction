@@ -4,5 +4,8 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-indexmap = "2.3.0"
-uuid = { version = "1.10.0", features = ["v4"] }
+indexmap = "2.7.1"
+uuid = { version = "1.13.1", features = ["v4"] }
+
+[build-dependencies]
+rustversion = "1.0.19"
